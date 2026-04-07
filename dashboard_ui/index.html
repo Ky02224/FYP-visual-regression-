@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Regression Workbench</title>
+  <link rel="stylesheet" href="/dashboard/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="eyebrow">Visual QA</div>
+        <div class="brand">Visual Regression Workbench</div>
+      </div>
+
+      <nav class="side-nav card-dark" aria-label="Main navigation">
+        <button class="side-nav-btn active" type="button" data-view-target="view-results">Results</button>
+        <button class="side-nav-btn" type="button" data-view-target="view-actions">Actions</button>
+        <button class="side-nav-btn" type="button" data-view-target="view-baselines">Baselines</button>
+        <button class="side-nav-btn" type="button" data-view-target="view-models">Models</button>
+        <button class="side-nav-btn" type="button" data-view-target="view-summaries">Summaries</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section class="hero active" data-view-panel="view-results">
+        <div class="hero-head">
+          <div>
+            <div class="eyebrow">Results</div>
+            <h1>Visual Change Status</h1>
+            <p>
+              Recent visual checks, the latest health signals, and the runs that need a decision.
+            </p>
+          </div>
+          <div class="hero-side">
+            <div class="subtle-badge" id="attention-badge">Workspace overview</div>
+            <button class="secondary-btn" id="refresh-btn" type="button">Refresh Workspace</button>
+          </div>
+        </div>
+        <div class="metrics" id="metrics-grid"></div>
+        <div class="result-strip" id="results-strip"></div>
+      </section>
+
+      <section class="board board-actions" data-view-panel="view-actions">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Actions</div>
+            <h2>Start a Task</h2>
+          </div>
+          <p class="section-note">Create a new baseline, update an existing one, or compare a page against the selected standard.</p>
+        </div>
+        <div class="tab-shell">
+          <div class="tab-row" role="tablist" aria-label="Operator actions">
+            <button class="tab-btn active" type="button" data-tab-group="actions" data-tab-target="action-create">Create Single</button>
+            <button class="tab-btn" type="button" data-tab-group="actions" data-tab-target="action-create-multiple">Create Multiple</button>
+            <button class="tab-btn" type="button" data-tab-group="actions" data-tab-target="action-update">Update Baseline</button>
+            <button class="tab-btn" type="button" data-tab-group="actions" data-tab-target="action-compare">Compare</button>
+          </div>
+
+          <div class="tab-panels">
+          <form class="action-card tab-panel active" id="action-create" data-action-form="create-baseline">
+            <div class="card-title-row">
+              <h3>Create Baseline</h3>
+              <span class="pill neutral">New</span>
+            </div>
+            <p>Capture a new standard image from a page URL and register it under a baseline name.</p>
+            <label>Baseline Name<input name="name" type="text" placeholder="marketing-home-en" required /></label>
+            <label>URL<input name="url" type="url" placeholder="http://127.0.0.1:8130/demo/index.html?lang=en-US" required /></label>
+            <div class="field-row two-up">
+              <label>Browser
+                <select name="browser">
+                  <option value="chromium">Chromium</option>
+                  <option value="firefox">Firefox</option>
+                  <option value="webkit">WebKit</option>
+                </select>
+              </label>
+              <label>Viewport<input name="viewport" type="text" placeholder="1440x960" /></label>
+            </div>
+            <div class="field-row three-up">
+              <label>Device
+                <select name="device">
+                  <option value="">Desktop (custom viewport)</option>
+                  <option value="iPhone 13">iPhone 13</option>
+                  <option value="iPhone SE">iPhone SE</option>
+                  <option value="Pixel 7">Pixel 7</option>
+                  <option value="iPad (gen 7)">iPad (gen 7)</option>
+                  <option value="Galaxy S9+">Galaxy S9+</option>
+                </select>
+              </label>
+              <label>Locale<input name="locale" type="text" placeholder="en-US" /></label>
+              <label>Updated By<input name="updated_by" type="text" placeholder="QA Lead" /></label>
+            </div>
+            <div class="action-feedback" aria-live="polite"></div>
+            <button class="primary-btn" type="submit">Create Baseline</button>
+          </form>
+
+          <form class="action-card tab-panel" id="action-create-multiple" data-action-form="create-multiple-baselines">
+            <div class="card-title-row">
+              <h3>Create Multiple Baselines</h3>
+              <span class="pill pending">Auto Crawl</span>
+            </div>
+            <p>Start from one website URL and let the system capture up to 30 same-domain pages as separate baselines.</p>
+            <label>Start URL<input name="url" type="url" placeholder="https://www.example.com" required /></label>
+            <div class="field-row three-up">
+              <label>Page Limit<input name="page_limit" type="number" min="1" max="30" value="30" /></label>
+              <label>Browser
+                <select name="browser">
+                  <option value="chromium">Chromium</option>
+                  <option value="firefox">Firefox</option>
+                  <option value="webkit">WebKit</option>
+                </select>
+              </label>
+              <label>Viewport<input name="viewport" type="text" placeholder="1440x960" /></label>
+            </div>
+            <div class="field-row three-up">
+              <label>Device
+                <select name="device">
+                  <option value="">Desktop (custom viewport)</option>
+                  <option value="iPhone 13">iPhone 13</option>
+                  <option value="iPhone SE">iPhone SE</option>
+                  <option value="Pixel 7">Pixel 7</option>
+                  <option value="iPad (gen 7)">iPad (gen 7)</option>
+                  <option value="Galaxy S9+">Galaxy S9+</option>
+                </select>
+              </label>
+              <label>Locale<input name="locale" type="text" placeholder="en-US" /></label>
+              <label>Updated By<input name="updated_by" type="text" placeholder="QA Lead" /></label>
+            </div>
+            <div class="field-row two-up">
+              <label class="checkbox-line"><input name="preserve_query" type="checkbox" /> Keep query-string pages as separate baselines</label>
+              <label class="checkbox-line"><input name="overwrite" type="checkbox" /> Replace existing baselines if names match</label>
+            </div>
+            <div class="field-row one-up">
+              <label class="checkbox-line"><input name="fail_fast" type="checkbox" /> Stop on the first crawl error</label>
+            </div>
+            <div class="action-feedback" aria-live="polite"></div>
+            <button class="primary-btn" type="submit">Create Multiple Baselines</button>
+          </form>
+
+          <form class="action-card tab-panel" id="action-update" data-action-form="update-baseline">
+            <div class="card-title-row">
+              <h3>Update Baseline</h3>
+              <span class="pill pending">Versioned</span>
+            </div>
+            <p>Refresh one baseline without affecting the rest. Previous versions stay archived and auditable.</p>
+            <label>Baseline Name
+              <select name="name" id="update-baseline-select" required>
+                <option value="">Select baseline</option>
+              </select>
+            </label>
+            <label>URL<input name="url" type="url" placeholder="http://127.0.0.1:8130/demo/index.html?lang=en-US" /></label>
+            <div class="field-row four-up">
+              <label>Browser
+                <select name="browser">
+                  <option value="chromium">Chromium</option>
+                  <option value="firefox">Firefox</option>
+                  <option value="webkit">WebKit</option>
+                </select>
+              </label>
+              <label>Device
+                <select name="device">
+                  <option value="">Desktop (custom viewport)</option>
+                  <option value="iPhone 13">iPhone 13</option>
+                  <option value="iPhone SE">iPhone SE</option>
+                  <option value="Pixel 7">Pixel 7</option>
+                  <option value="iPad (gen 7)">iPad (gen 7)</option>
+                  <option value="Galaxy S9+">Galaxy S9+</option>
+                </select>
+              </label>
+              <label>Viewport<input name="viewport" type="text" placeholder="1440x960" /></label>
+              <label>Locale<input name="locale" type="text" placeholder="en-US" /></label>
+            </div>
+            <label>Updated By<input name="updated_by" type="text" placeholder="Sandra" /></label>
+            <div class="action-feedback" aria-live="polite"></div>
+            <div class="button-row split-row">
+              <button class="primary-btn" type="submit">Update Baseline</button>
+              <button class="secondary-btn" type="button" id="baseline-to-update-btn">Use Selected Baseline</button>
+            </div>
+          </form>
+
+          <form class="action-card tab-panel" id="action-compare" data-action-form="compare">
+            <div class="card-title-row">
+              <h3>Compare</h3>
+              <span class="pill fail">Detect</span>
+            </div>
+            <p>Choose one baseline, set the current URL, then compare it across one or more browsers, devices, and locales.</p>
+            <label>Baseline Name
+              <select name="name" id="compare-baseline-select" required>
+                <option value="">Select baseline</option>
+              </select>
+            </label>
+            <label>URL<input name="url" id="compare-url-input" type="url" placeholder="http://127.0.0.1:8130/demo/index.html?lang=en-US&defect=missing-cta" required /></label>
+            <div class="selection-group">
+              <span class="selection-label">Browsers</span>
+              <div class="checkbox-grid three-up">
+                <label class="checkbox-chip"><input name="browsers" type="checkbox" value="chromium" checked /> Chromium</label>
+                <label class="checkbox-chip"><input name="browsers" type="checkbox" value="firefox" /> Firefox</label>
+                <label class="checkbox-chip"><input name="browsers" type="checkbox" value="webkit" /> WebKit</label>
+              </div>
+            </div>
+            <div class="selection-group">
+              <span class="selection-label">Devices</span>
+              <div class="checkbox-grid three-up">
+                <label class="checkbox-chip"><input name="devices" type="checkbox" value="desktop" checked /> Desktop</label>
+                <label class="checkbox-chip"><input name="devices" type="checkbox" value="iPhone 13" /> iPhone 13</label>
+                <label class="checkbox-chip"><input name="devices" type="checkbox" value="iPhone SE" /> iPhone SE</label>
+                <label class="checkbox-chip"><input name="devices" type="checkbox" value="Pixel 7" /> Pixel 7</label>
+                <label class="checkbox-chip"><input name="devices" type="checkbox" value="iPad (gen 7)" /> iPad (gen 7)</label>
+                <label class="checkbox-chip"><input name="devices" type="checkbox" value="Galaxy S9+" /> Galaxy S9+</label>
+              </div>
+            </div>
+            <div class="selection-group">
+              <span class="selection-label">Locales</span>
+              <div class="checkbox-grid three-up">
+                <label class="checkbox-chip"><input name="locales" type="checkbox" value="en-US" checked /> en-US</label>
+                <label class="checkbox-chip"><input name="locales" type="checkbox" value="ms-MY" /> ms-MY</label>
+                <label class="checkbox-chip"><input name="locales" type="checkbox" value="zh-CN" /> zh-CN</label>
+              </div>
+            </div>
+            <div class="field-row two-up">
+              <label>Viewport<input name="viewport" type="text" placeholder="1440x960" /></label>
+              <label>Threshold %<input name="threshold_pct" type="number" step="0.0001" placeholder="0.35" /></label>
+            </div>
+            <div class="field-row two-up">
+              <label class="checkbox-line"><input name="no_ai" type="checkbox" /> Skip AI assessment</label>
+              <div class="compare-count" id="compare-count">This will run 1 comparison.</div>
+            </div>
+            <div class="action-feedback" aria-live="polite"></div>
+            <button class="primary-btn" type="submit">Run Compare</button>
+          </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="board board-runs active" data-view-panel="view-results">
+        <section class="panel panel-wide">
+          <div class="panel-head stackable">
+            <div>
+              <div class="section-kicker">Results</div>
+              <h2>Runs</h2>
+              <p class="section-note slim-note">Click one run to inspect it. Click the same run again to close the detail panel.</p>
+            </div>
+            <div class="toolbar">
+              <input id="run-search" type="search" placeholder="Search run, case, URL, suite" />
+              <select id="status-filter">
+                <option value="">All statuses</option>
+              </select>
+              <select id="decision-filter">
+                <option value="">All decisions</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <select id="browser-filter">
+                <option value="">All browsers</option>
+              </select>
+              <select id="device-filter">
+                <option value="">All devices</option>
+              </select>
+              <select id="locale-filter">
+                <option value="">All locales</option>
+              </select>
+            </div>
+          </div>
+          <table class="runs-table">
+            <thead>
+              <tr>
+                <th>Run</th>
+                <th>Status</th>
+                <th>Decision</th>
+                <th>Mismatch</th>
+                <th>Severity</th>
+                <th>AI</th>
+              </tr>
+            </thead>
+            <tbody id="runs-body"></tbody>
+          </table>
+        </section>
+
+        <section class="detail hidden" id="run-detail-panel">
+          <div class="detail-header">
+            <div>
+              <div class="section-kicker">Selected Run</div>
+              <h2 id="detail-run-title">Run Detail</h2>
+            </div>
+            <div class="detail-actions">
+              <button class="ghost-btn" id="delete-run-btn" type="button">Delete Run</button>
+              <a class="secondary-btn" id="open-report-link" href="#" target="_blank" rel="noreferrer">Open Report</a>
+            </div>
+          </div>
+
+          <div class="stats-grid" id="run-stats-grid">
+            <article class="stat-card empty"><strong>No run selected yet.</strong><span>Pick one from the table to inspect details.</span></article>
+          </div>
+
+          <div class="info-card" id="run-meta-card"></div>
+
+          <div class="split-pane">
+            <div class="info-card">
+              <div class="mini-head">
+                <h3>Decision History</h3>
+              </div>
+              <div id="decision-history"></div>
+            </div>
+            <div class="info-card">
+              <div class="mini-head">
+                <h3>Baseline Context</h3>
+                <button class="ghost-btn" id="prefill-baseline-update" type="button">Prefill Update Form</button>
+              </div>
+              <div id="run-baseline-context"></div>
+            </div>
+          </div>
+
+          <form class="review-form" id="decision-form">
+            <input type="hidden" id="decision-run-id" />
+            <div class="mini-head">
+              <h3>Approve / Reject</h3>
+            </div>
+            <div class="field-row two-up">
+              <label for="decider">Decider<input id="decider" type="text" placeholder="Sandra" /></label>
+              <label for="decision">Decision
+                <select id="decision">
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </label>
+            </div>
+            <label for="comment">Comment<textarea id="comment" placeholder="Decision note"></textarea></label>
+            <div class="button-row">
+              <button class="primary-btn" type="submit">Save Decision</button>
+            </div>
+          </form>
+
+          <iframe class="report-frame" id="report-frame" title="Visual report preview"></iframe>
+        </section>
+      </section>
+
+      <section class="board board-assets" data-view-panel="view-baselines">
+        <section class="panel panel-wide">
+          <div class="panel-head">
+            <div>
+              <div class="section-kicker">Baselines</div>
+              <h2>Baseline Library</h2>
+              <p class="section-note slim-note">Your approved visual standards live here. Inspect them, restore old versions, or remove stale baselines.</p>
+            </div>
+            <div class="toolbar toolbar-narrow">
+              <input id="baseline-search" type="search" placeholder="Search baseline, URL, browser, locale" />
+            </div>
+          </div>
+          <div class="baseline-strip" id="baseline-strip"></div>
+          <div class="baseline-grid" id="baseline-list"></div>
+        </section>
+
+        <section class="detail hidden" id="baseline-detail-panel">
+          <div class="detail-header">
+            <div>
+              <div class="section-kicker">Selected Baseline</div>
+              <h2 id="baseline-detail-title">Baseline Detail</h2>
+            </div>
+            <div class="detail-actions">
+              <button class="ghost-btn" id="delete-baseline-btn" type="button">Delete Baseline</button>
+            </div>
+          </div>
+          <div class="baseline-detail" id="baseline-detail"></div>
+        </section>
+      </section>
+
+      <section class="board" data-view-panel="view-models">
+        <section class="panel panel-wide">
+          <div class="panel-head">
+            <div>
+              <div class="section-kicker">Models</div>
+              <h2>AI Inventory</h2>
+            </div>
+          </div>
+          <div class="model-list model-list-expanded" id="model-list"></div>
+        </section>
+      </section>
+
+      <section class="board" data-view-panel="view-summaries">
+        <section class="panel panel-wide">
+          <div class="panel-head">
+            <div>
+              <div class="section-kicker">Summaries</div>
+              <h2>Recent Suite Summaries</h2>
+            </div>
+          </div>
+          <div class="summary-grid summary-grid-expanded" id="summary-grid"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <div class="image-lightbox hidden" id="image-lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close image preview">Close</button>
+    <div class="lightbox-stage">
+      <img id="lightbox-image" class="lightbox-image" src="" alt="Expanded preview" />
+      <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+  </div>
+  <script src="/dashboard/app.js"></script>
+</body>
+</html>
